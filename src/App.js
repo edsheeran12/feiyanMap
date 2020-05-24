@@ -56,21 +56,21 @@ var worldHeader=[]
       showSorterTooltip:false
     },
   ];
-var promise1=new Promise((resolve, reject) => {
+var promise1=new Promise((resolve, reject) => {//世界肺炎数据
   axios.post('https://api.inews.qq.com/newsqa/v1/automation/modules/list?modules=FAutoGlobalStatis,FAutoContinentStatis,FAutoGlobalDailyList,FAutoCountryConfirmAdd').then((res) => {
    console.log(res.data.data.FAutoGlobalStatis)
      worldData=res.data.data.FAutoGlobalStatis
      resolve();
  });
 });
-var promise2=new Promise((resolve, reject) => {
+var promise2=new Promise((resolve, reject) => {//世界各国肺炎排行
   axios.post('https://api.inews.qq.com/newsqa/v1/automation/foreign/country/ranklist').then((res) => {
    console.log(res.data.data)
      rankList=res.data.data
      resolve();
  });
 });
-var promise3=new Promise((resolve, reject) => {
+var promise3=new Promise((resolve, reject) => {//中国肺炎数据
  $.ajax({
    type: "get",
    url: 'https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5',
@@ -82,7 +82,7 @@ var promise3=new Promise((resolve, reject) => {
    },
    });
 });
-class Map extends React.Component{
+class Map extends React.Component{//肺炎地图
    map() {
      var max=2000
      var show=true
@@ -355,7 +355,7 @@ class Map extends React.Component{
   }
   
 }
-function Header(params) {
+function Header(params) {//肺炎数据总览
   var data=params.header
   return  <div className='box'>
   {
@@ -371,7 +371,7 @@ function Header(params) {
   }
 </div>
 }
-class List extends React.Component{
+class List extends React.Component{//肺炎数据列表
   render(){
     return <Table rowKey="area" dataSource={this.props.dataSource} columns={columns} pagination={{position:['bottomCenter']}} />
   }
@@ -381,12 +381,12 @@ class App extends React.Component {
     super(props)
     this.state = {
       current: 'china',
-      dataSource:[],
-      dataMap:[],
-     header:[]
+      dataSource:[],//列表数据
+      dataMap:[],//地图数据
+     header:[]//头部总览数据
     };
   }
-  handleClick = e => {
+  handleClick = e => {//切换数据
     console.log('click ', e);
     this.setState({
       current: e.key,
@@ -410,6 +410,7 @@ class App extends React.Component {
       console.log('成功');
       console.log(chinaData)
       console.log(rankList)
+      //中国总览数据
         chinaHeader=[
           {
             name:'累计确诊',
@@ -432,6 +433,7 @@ class App extends React.Component {
             total:chinaData.chinaTotal.heal
           }
         ]
+      //世界总览数据
         worldHeader=[
           {
             name:'累计确诊',
@@ -456,6 +458,7 @@ class App extends React.Component {
         ]
       
         chinaData.areaTree[0].children.forEach((item,i)=>{
+          //中国列表数据
           chinaList[i]={
             area:item.name,
             new:item.today.confirm,
@@ -463,12 +466,14 @@ class App extends React.Component {
             death:item.total.dead,
             cure:item.total.heal,
           }
+          //中国地图数据
           chinaMap[i]={
             name:item.name,
             value:item.total.confirm
           }
         })
         rankList.forEach((item,i)=>{
+          //世界列表数据
           worldList[i]={
             area:item.name,
             new:item.confirmAdd,
@@ -476,12 +481,13 @@ class App extends React.Component {
             death:item.dead,
             cure:item.heal,
           }
+          //世界地图数据
           worldMap[i]={
             name:item.name,
             value:item.confirm
           }
         })
-        worldMap.push({name:'中国',value                                                          :chinaData.chinaTotal.confirm})
+        worldMap.push({name:'中国',value:chinaData.chinaTotal.confirm})
       this.setState({
         rankList:rankList,
         dataSource:chinaList,
@@ -508,7 +514,6 @@ class App extends React.Component {
      <Header header={this.state.header}></Header>
       <Map data={this.state.current} dataMap={this.state.dataMap}></Map>
       <List dataSource={this.state.dataSource}></List>
-      {/* <Table rowKey="area" dataSource={this.state.dataSource} columns={columns} pagination={{position:['bottomCenter']}} /> */}
       </div>
     );
   }
